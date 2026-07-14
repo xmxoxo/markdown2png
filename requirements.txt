@@ -1,0 +1,4 @@
+ markdown==3.3.4
+ weasyprint==52.5
+ # weasyprint==66.0
+ pillow==9.2.0

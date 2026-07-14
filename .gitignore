@@ -1,0 +1,6 @@
+__pycache__
+download
+tests
+md_news
+output/*.png
+output/*.jpg
