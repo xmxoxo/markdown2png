@@ -63,17 +63,22 @@ def readtxt(fname, encoding='utf-8'):
         return ''
 
 
-def md2png(md_text:str, output_path:str, template_file:str="", dpi=96):
+def md2png(
+    md_text:str,
+    output_path:str,
+    cssfile = "template/base.css",
+    template_file:str="", dpi=96):
     ''' markdown格式转存为PNG图像
-    md_text: 文本内容
-    output_path: 输出目录
+    md_text:        Markdown文本内容
+    output_path:    输出目录
+    cssfile         CSS样式文件；
     template_file： 模板文件
+    dpi             输出的分辨率
     '''
     if md_text=="":
         return ""
     
     # 读取CSS
-    cssfile = "template/base.css"
     css = readtxt(cssfile)
     # 处理统一缩进
     md_text = textwrap.dedent(md_text)
@@ -151,8 +156,8 @@ def test_file2png ():
     fname = "md_news/20251102.md"
     md_text = readtxt(fname)
 
-    outpath = ""
-    ret = md2png (md_text, outpath)
+    outpath = "output/"
+    ret = md2png (md_text, outpath, dpi=150)
     print(f"图片已保存: {ret}")
 
 def test_template2png ():

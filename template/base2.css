@@ -1,0 +1,20 @@
+body {
+	font-family: sans-serif;
+	padding: 20px;
+	line-height: 1.5;
+	/* background: white; color: black; */
+}
+code {
+	background: #f0f0f0;
+	padding: 2px 4px;
+	border-radius: 3px;
+	/* overflow-x 不支持，已移除 */
+}
+pre {
+	background: #f8f8f8;
+	padding: 10px;
+	border-radius: 5px;
+	/* overflow-x: auto; ← 删除这行 */
+	white-space: pre-wrap; /* 允许长代码自动换行 */
+	/* word-break: break-all; 不支持*/
+}

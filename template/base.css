@@ -1,20 +1,85 @@
+@page {
+	/*size: 210mm auto;   宽度固定（如A4宽），高度自适应 */
+	size: auto;
+	margin: 0;
+}
+
+/* 整体页面设置 */
+html {
+	/*width: 1920px */
+	width: 100%;
+	/*  height: 100%; */
+	margin: 0;
+	padding: 2px 0;
+	background-color: #e6f2ff; /* 浅蓝色背景：柔和的天蓝色 e6f2ff 7652Fd */
+	/* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; */
+	font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+	
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	/* 背景现在不会断开，因为没有分页 */
+}
+
+/* 内容容器：白色卡片 */
 body {
-	font-family: sans-serif;
-	padding: 20px;
-	line-height: 1.5;
-	/* background: white; color: black; */
+	width: 80%;
+	max-width: 900px;           /* 限制最大宽度，避免在大屏上过宽 */
+	margin: 20px auto;          /* 上下20px，左右居中 */
+	padding: 30px;              /* 内边距，让文字不贴边 */
+	background: white;          /* 白色背景 */
+	border-radius: 12px;        /* 圆角 */
+	/* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);  可选：轻微阴影，更立体 */
+	line-height: 1.6;
+	color: #333;
 }
+
+/* 标题样式优化 */
+h1, h2, h3, h4, h5, h6 {
+	color: #1a5fb4; /* 深一点的蓝色，与背景协调 */
+	margin-top: 1.2em;
+	margin-bottom: 0.6em;
+}
+
+/* 代码块美化 */
 code {
-	background: #f0f0f0;
-	padding: 2px 4px;
-	border-radius: 3px;
-	/* overflow-x 不支持，已移除 */
+	background-color: #f6f8fa;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-family: Consolas, "Courier New", monospace;
+	font-size: 0.95em;
 }
+
 pre {
-	background: #f8f8f8;
-	padding: 10px;
-	border-radius: 5px;
-	/* overflow-x: auto; ← 删除这行 */
-	white-space: pre-wrap; /* 允许长代码自动换行 */
-	/* word-break: break-all; 不支持*/
+	background-color: #f6f8fa;
+	padding: 12px;
+	border-radius: 8px;
+	/* overflow-x: auto;  虽然 WeasyPrint 不支持，但保留无害 */
+	white-space: pre-wrap;
+	/* word-break: break-all; 不支持，但保留无害 */
+	margin: 1em 0;
+}
+
+/* 表格美化 */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1em 0;
+}
+th, td {
+	border: 1px solid #ddd;
+	padding: 8px 12px;
+	text-align: left;
+}
+th {
+	background-color: #f0f7ff;
+	font-weight: bold;
+}
+
+/* 列表间距优化 */
+ul, ol {
+	padding-left: 24px;
+	margin: 0.8em 0;
+}
+
+li {
+	margin-bottom: 0.3em;
 }
