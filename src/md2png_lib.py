@@ -125,7 +125,7 @@ def md2png(
     return asyncio.run(md_to_png(md_text, output_path, cssfile, template_file))
 
 
-def get_base64(filename):
+def get_base64(filename:str) -> str:
     '''加载指定文件, 转为base64编码
     '''
     try:
@@ -139,7 +139,7 @@ def get_base64(filename):
         print(err)
         return ''
 
-def test_md2img ():
+def test_md2img():
     '''单元测试：各种markdown的标准格式
     '''
     # 示例Markdown文本

@@ -6,7 +6,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.md2png_lib import md_to_png
+from src.md2png_lib import md_to_png, get_base64
 from src.qiniu_lib import upload_to_qiniu
 from app.core.config import settings
 
@@ -83,13 +83,19 @@ async def markdown2png_api(request: Markdown2PngRequest):
                 qiniu_url = ""
                 # raise HTTPException(status_code=500, detail="七牛云上传失败")
         
-        relative_path = f"/output/{os.path.basename(local_file)}"
+        # 计算相对路径
+        output_dir_name = os.path.basename(os.path.normpath(output_path))
+        relative_path = f"/{output_dir_name}/{os.path.basename(local_file)}"
         
+        # 增加返回base64
+        b64 = get_base64(local_file)
+
         return {
             "success": True,
             "message": "图片生成成功",
             "local_path": relative_path,
-            "qiniu_url": qiniu_url
+            "qiniu_url": qiniu_url,
+            "base64": b64
         }
     
     except HTTPException as e:

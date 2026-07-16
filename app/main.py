@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from app.api.routes import router
 from app.core.config import settings
+import os
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -11,7 +12,8 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-app.mount("/output", StaticFiles(directory=settings.OUTPUT_DIR), name="output")
+output_dir_name = os.path.basename(os.path.normpath(settings.OUTPUT_DIR))
+app.mount(f"/{output_dir_name}", StaticFiles(directory=settings.OUTPUT_DIR), name="output")
 # app.mount("/template", StaticFiles(directory=settings.TEMPLATE_DIR), name="template")
 
 app.include_router(router, prefix="/api")
