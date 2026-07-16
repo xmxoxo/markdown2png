@@ -6,7 +6,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.md2png_lib import md2png
+from src.md2png_lib import md_to_png
 from src.qiniu_lib import upload_to_qiniu
 from app.core.config import settings
 
@@ -62,7 +62,7 @@ async def markdown2png_api(request: Markdown2PngRequest):
         output_path = settings.OUTPUT_DIR
         os.makedirs(output_path, exist_ok=True)
         
-        local_file = md2png(
+        local_file = await md_to_png(
             md_text=request.md_text,
             output_path=output_path,
             cssfile=request.cssfile,
@@ -75,16 +75,20 @@ async def markdown2png_api(request: Markdown2PngRequest):
         qiniu_url = None
         if request.isupload:
             if not settings.QINIU_ACCESS_KEY or not settings.QINIU_SECRET_KEY:
-                raise HTTPException(status_code=400, detail="七牛云配置未设置")
+                qiniu_url = ""
+                # raise HTTPException(status_code=400, detail="七牛云配置未设置")
             
             qiniu_url = upload_to_qiniu(local_file, "markdown2png")
             if not qiniu_url:
-                raise HTTPException(status_code=500, detail="七牛云上传失败")
+                qiniu_url = ""
+                # raise HTTPException(status_code=500, detail="七牛云上传失败")
+        
+        relative_path = f"/output/{os.path.basename(local_file)}"
         
         return {
             "success": True,
             "message": "图片生成成功",
-            "local_path": local_file,
+            "local_path": relative_path,
             "qiniu_url": qiniu_url
         }
     

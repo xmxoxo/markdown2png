@@ -5,7 +5,7 @@ services:
     build: .
     container_name: markdown2png-service
     ports:
-      - "8000:8000"
+      - "8030:8030"
     volumes:
       - ./template:/app/template
       - ./output:/app/output

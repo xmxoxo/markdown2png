@@ -6,122 +6,138 @@ __author__ = 'xmxoxo<xmxoxo@qq.com>'
 '''
 
 
-import os
+import asyncio
 import logging
+import os
+import base64
 import textwrap
 import random
 import time
 import markdown
-from weasyprint import HTML
+from playwright.async_api import async_playwright
 
-def rand_filename(path='', pre='', ext=''):
-    '''按时间戳生成文件名'''
+def rand_filename(path="", pre="", ext=""):
+    """按时间戳生成文件名，并自动创建目录"""
     nowtime = time.time()
-    fmttxt = time.strftime('%Y%m%d%H%M%S', time.localtime(nowtime))
-
-    dt = int((nowtime - int(nowtime))*1000)
+    fmttxt = time.strftime("%Y%m%d%H%M%S", time.localtime(nowtime))
+    dtime = int((nowtime - int(nowtime)) * 1000)
     rndnum = random.randint(100, 999)
-    filename = '%s%s%03d%03d%s' % (pre, fmttxt, dt, rndnum, ext)
+    filename = f"{pre}{fmttxt}{dtime:03d}{rndnum:03d}{ext}"
     if path:
         mkfold(path)
     fname = os.path.join(path, filename)
     return fname
 
+
 def mkfold(new_dir):
     '''创建目录，支持多级子目录'''
     try:
-        if new_dir == '': return
+        if new_dir == '':
+            return False
         if not os.path.exists(new_dir):
             os.makedirs(new_dir, exist_ok=True)
-    except Exception as e:
-        pass
-
-def readtxtfile(fname, encoding='utf-8'):
-    ''' 读取文本文件, 自动识别编码 '''
-
-    try:
-        with open(fname, 'r', encoding=encoding) as f:
-            data = f.read()
-        return data
-    except UnicodeDecodeError as e:
-        try:
-            with open(fname,'r', encoding='gb2312') as f:
-                data = f.read()
-            return data
-        except Exception as e:
-            return ''
-    except Exception as e:
-        return ''
+        return True
+    except Exception:   # pylint: disable=broad-exception-caught
+        return False
 
 def readtxt(fname, encoding='utf-8'):
     ''' 读入文件'''
     try:
-        with open(fname, 'r', encoding=encoding) as f:
-            data = f.read()
+        with open(fname, 'r', encoding=encoding) as fobj:
+            data = fobj.read()
         return data
-    except Exception as e:
+    except (FileNotFoundError, PermissionError, UnicodeDecodeError, OSError) as err:
+        logging.error("无法读取文件 %s: %s", fname, err)
         return ''
+
+def md2html(md_text:str, cssfile:str="template/base.css", template_file:str=""):
+    '''markdown转为HTML
+    md_text:        Markdown文本内容
+    cssfile:        CSS样式文件路径
+    template_file： 模板文件路径
+    '''
+    # 默认的最简洁的模板
+    page_html = """
+    <html><head><meta charset="utf-8" />
+    <style>{css}</style>
+    </head>
+    <body>
+     {html}
+    </body>
+    </html>
+    """
+    page_html = textwrap.dedent(page_html)
+    # markdown转为HTML
+    md_text = textwrap.dedent(md_text)
+    html = markdown.markdown(md_text, extensions=['fenced_code', 'tables'])
+    # 加载模板文件
+    html_template = readtxt(template_file)
+    if "{html}" in html_template:
+        page_html = html_template
+
+    # 加载CSS
+    custom_css = readtxt(cssfile)
+    page_html = page_html.replace('{css}', custom_css)
+    page_html = page_html.replace("{html}", html)
+    return page_html
+
+async def md_to_png(md_text:str, output_path:str,
+        cssfile:str="template/base.css",
+        template_file:str="", width:int=1080):
+    '''markdown转PNG图（使用playwright）
+    md_text:        Markdown文本内容
+    output_path:    输出目录
+    cssfile:        CSS样式文件路径
+    template_file： 模板文件路径
+    width:          输出图片宽度
+    '''
+    if not md_text.strip():
+        return ""
+
+    page_html = md2html(md_text, cssfile, template_file)
+    output_filename = rand_filename(output_path, "md_", ".png")
+
+    async with async_playwright() as pobj:
+        browser = await pobj.chromium.launch()
+        page = await browser.new_page(viewport={'width': width, 'height': 1})
+        await page.set_content(page_html)
+
+        content_height = await page.evaluate('document.body.scrollHeight')
+        logging.debug("内容实际高度: %d px", content_height)
+        await page.set_viewport_size({'width': width, 'height': content_height})
+        await page.screenshot(path=output_filename, full_page=True)
+        await browser.close()
+    logging.debug("图片已保存:%s", output_filename)
+    return output_filename
 
 
 def md2png(
     md_text:str,
     output_path:str,
     cssfile = "template/base.css",
-    template_file:str="", dpi=96):
-    ''' markdown格式转存为PNG图像
+    template_file:str=""):
+    ''' markdown格式转存为PNG图像（旧版，已废弃，使用md_to_png）
     md_text:        Markdown文本内容
     output_path:    输出目录
     cssfile         CSS样式文件；
     template_file： 模板文件
-    dpi             输出的分辨率
     '''
-    if md_text=="":
-        return ""
-    
-    # 读取CSS
-    css = readtxt(cssfile)
-    # 处理统一缩进
-    md_text = textwrap.dedent(md_text)
+    return asyncio.run(md_to_png(md_text, output_path, cssfile, template_file))
 
-    logging.info('正在加载markdown...')
-    html = markdown.markdown(md_text, extensions=['fenced_code', 'tables'])
-    # 可选：添加基础样式
-    styled_html = f"""
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-        {css}
-        </style>
-    </head>
-    <body>
-    {html}
-    </body>
-    </html>
-    """
 
-    # 加载模板
-    if template_file:
-        logging.info('正在加载模板...')
-        html_template = readtxt(template_file)
-        # 判断是否含有标识
-        text_keys = "{html}"
-        if text_keys in html_template:
-            logging.info('正在应用模板...')
-            styled_html = html_template.replace(text_keys, html)
-    
-    styled_html = textwrap.dedent(styled_html)
-    # 自动生成文件名
-    logging.info('正在生成文件名...')
-    output_filename = rand_filename(output_path, "md_", ".png")
-
-    # 保存输出文件
-    logging.info('正在生成图像...')
-    obj = HTML(string=styled_html)
-    # resolution 分辨率，默认是96
-    obj.write_png(output_filename, resolution=dpi)
-
-    return output_filename
+def get_base64(filename):
+    '''加载指定文件, 转为base64编码
+    '''
+    try:
+        with open(filename, 'rb') as f:
+            base64_data = base64.b64encode(f.read())
+            # 使用安全的base64编码 则改为下面方式编码
+            # base64_data = base64.urlsafe_b64encode(f.read())
+            ret = base64_data.decode()
+            return ret
+    except Exception as err:
+        print(err)
+        return ''
 
 def test_md2img ():
     '''单元测试：各种markdown的标准格式
@@ -157,7 +173,7 @@ def test_file2png ():
     md_text = readtxt(fname)
 
     outpath = "output/"
-    ret = md2png (md_text, outpath, dpi=150)
+    ret = md2png (md_text, outpath)
     print(f"图片已保存: {ret}")
 
 def test_template2png ():
@@ -174,9 +190,7 @@ def test_template2png ():
     print(f"图片已保存: {ret}")
 
 if __name__ == '__main__':
-    # DEBUG  INFO ERROR  CRITICAL 
+    # DEBUG  INFO ERROR  CRITICAL
     logging.basicConfig(level=logging.INFO)
     import fire
     fire.Fire()
-
-

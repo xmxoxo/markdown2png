@@ -24,6 +24,12 @@
 		/* 背景现在不会断开，因为没有分页 */
 	}
 
+	img, video {
+		max-width: 100%;
+		height: auto;
+		border-radius: 0.5rem;
+	}
+
 	/* 内容容器：白色卡片 */
 	.container {
 		width: 80%;
@@ -32,7 +38,7 @@
 		padding: 30px;              /* 内边距，让文字不贴边 */
 		background: white;          /* 白色背景 */
 		border-radius: 12px;        /* 圆角 */
-		/* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);  可选：轻微阴影，更立体 */
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /*  可选：轻微阴影，更立体 */
 		line-height: 1.6;
 		color: #333;
 	}

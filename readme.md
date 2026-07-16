@@ -125,6 +125,10 @@ WARNING:weasyprint:Ignored `overflow-x: auto` at 45:13, unknown property.
 WARNING:weasyprint:Ignored `word-break: break-all` at 47:13, unknown property.
 图片已保存: output/md_20251105094021880498.png
 
+python src/md2png_lib.py test_file2png
+
+python src/md2png_lib.py  test_md2img
+
 python src/md2png_lib.py test_template2png
 
 ```
@@ -167,7 +171,7 @@ markdown2png/
 - **框架**: FastAPI 0.110.0
 - **语言**: Python 3.10
 - **Markdown解析**: markdown 3.3.4
-- **HTML转PNG**: weasyprint 52.5
+- **HTML转PNG**: playwright 1.45.0 (Chromium)
 - **七牛云存储**: qiniu 7.17.0+
 - **测试框架**: pytest 8.1.0
 
@@ -196,12 +200,12 @@ POST /api/markdown2png
 
 **请求参数**:
 
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| md_text | string | 是 | - | Markdown文本内容 |
-| isupload | boolean | 否 | false | 是否上传到七牛云存储 |
-| cssfile | string | 否 | template/base.css | CSS样式文件路径 |
-| template | string | 否 | "" | HTML模板文件路径 |
+|    参数  | 类型    | 必填 |        默认值     |           说明       |
+|   ------ | ------  |------|       --------    |          ------      |
+| md_text  | string  | 是   | -                 | Markdown文本内容     |
+| isupload | boolean | 否   | false             | 是否上传到七牛云存储 |
+| cssfile  | string  | 否   | template/base.css | CSS样式文件路径      |
+| template | string  | 否   | ""                | HTML模板文件路径     |
 
 **请求示例**:
 ```json
@@ -218,9 +222,16 @@ POST /api/markdown2png
 {
     "success": true,
     "message": "图片生成成功",
-    "local_path": "output/md_20251105091745266776.png",
+    "local_path": "/output/md_20251105091745266776.png",
     "qiniu_url": null
 }
+```
+
+**图片访问**:
+生成的图片可通过以下URL直接访问：
+
+```
+http://localhost:8030/output/md_20251105091745266776.png
 ```
 
 ### 本地开发
@@ -230,11 +241,11 @@ POST /api/markdown2png
 pip install -r requirements.txt
 
 # 启动开发服务器
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8030 --reload
 
 # 访问API文档
-# http://localhost:8000/docs
-# http://localhost:8000/redoc
+# http://localhost:8030/docs
+# http://localhost:8030/redoc
 ```
 
 ### 单元测试
@@ -256,6 +267,12 @@ python -m pytest tests/test_api.py::test_health_endpoint -v
 ```bash
 # 构建并启动容器
 docker-compose up -d
+
+# 强制重新构建镜像，然后启动
+docker-compose up -d --build
+
+# 只构建镜像，不启动
+docker-compose build
 
 # 查看日志
 docker-compose logs -f

@@ -9,9 +9,7 @@ pip install qiniu
 
 import os
 # import logging
-# import qiniu.config
 from qiniu import Auth, put_file, etag
-# , urlsafe_base64_encode   #, put_file_v2
 
 # SaaS 七牛配置 七牛的 Access Key 和 Secret Key
 QINIU_ACCESS_KEY = os.getenv('QINIU_ACCESS_KEY')
