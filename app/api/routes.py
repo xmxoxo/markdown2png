@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 import os
 import sys
+import requests
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -20,10 +21,12 @@ class HealthResponse(BaseModel):
 
 
 class Markdown2PngRequest(BaseModel):
-    md_text: str
+    md_text: str = ""
     isupload: Optional[bool] = False
     cssfile: Optional[str] = "template/base.css"
     template: Optional[str] = ""
+    width: Optional[int] = 1080
+    from_url: Optional[str] = ""
 
 
 class Markdown2PngResponse(BaseModel):
@@ -31,6 +34,7 @@ class Markdown2PngResponse(BaseModel):
     message: str
     local_path: Optional[str] = None
     qiniu_url: Optional[str] = None
+    base64: str
 
 
 @router.get("/health", response_model=HealthResponse, summary="健康检查")
@@ -50,23 +54,38 @@ async def markdown2png_api(request: Markdown2PngRequest):
     """
     将Markdown文本转换为PNG图片
     
-    - **md_text**: Markdown文本内容（必填）
+    - **md_text**: Markdown文本内容
+    - **from_url**: 从URL地址读取markdown，如果不为空则优先读取，覆盖md_text参数
     - **isupload**: 是否上传到七牛云存储，默认false
     - **cssfile**: CSS样式文件路径，默认"template/base.css"
     - **template**: HTML模板文件路径，默认空字符串（不使用模板）
+    - **width**: 输出图片宽度，默认1080
     """
     try:
-        if not request.md_text.strip():
+        md_text = request.md_text
+        from_url = request.from_url.strip()
+        
+        if from_url:
+            try:
+                response = requests.get(from_url, timeout=30)
+                response.raise_for_status()
+                response.encoding = "utf-8"
+                md_text = response.text
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=f"从URL读取markdown失败: {str(e)}")
+        
+        if not md_text.strip():
             raise HTTPException(status_code=400, detail="md_text不能为空")
         
         output_path = settings.OUTPUT_DIR
         os.makedirs(output_path, exist_ok=True)
         
         local_file = await md_to_png(
-            md_text=request.md_text,
+            md_text=md_text,
             output_path=output_path,
             cssfile=request.cssfile,
-            template_file=request.template
+            template_file=request.template,
+            width=request.width
         )
         
         if not local_file:

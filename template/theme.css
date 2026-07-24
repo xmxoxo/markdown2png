@@ -1,0 +1,158 @@
+@page {
+	size: auto;
+	margin: 0;
+}
+
+/* 基础排版与字体 */
+html {
+	width: 100%;
+	margin: 0;
+	padding: 2px 0;
+	font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+	line-height: 1.6;
+	color: #333;
+}
+
+/* ================= 配色主题系统 (核心修复) ================= */
+/* 将渐变背景直接放在 body 上，并去掉原来的 background: white */
+
+/* 1. 蓝色主题 (默认) */
+body.theme-blue {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+body.theme-blue h1, body.theme-blue h2, body.theme-blue h3, 
+body.theme-blue h4, body.theme-blue h5, body.theme-blue h6 {
+	color: #1a5fb4;
+}
+body.theme-blue th {
+	background-color: #f0f7ff;
+}
+
+/* 2. 绿色主题 (清新自然) */
+body.theme-green {
+	background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+body.theme-green h1, body.theme-green h2, body.theme-green h3, 
+body.theme-green h4, body.theme-green h5, body.theme-green h6 {
+	color: #0f7a6e;
+}
+body.theme-green th {
+	background-color: #eefbf5;
+}
+
+/* 3. 橙色主题 (活力温暖) */
+body.theme-orange {
+	background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+}
+body.theme-orange h1, body.theme-orange h2, body.theme-orange h3, 
+body.theme-orange h4, body.theme-orange h5, body.theme-orange h6 {
+	color: #c05621;
+}
+body.theme-orange th {
+	background-color: #fffaf0;
+}
+
+/* 4. 紫色主题 (优雅神秘) */
+body.theme-purple {
+	background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+}
+body.theme-purple h1, body.theme-purple h2, body.theme-purple h3, 
+body.theme-purple h4, body.theme-purple h5, body.theme-purple h6 {
+	color: #5b21b6;
+}
+body.theme-purple th {
+	background-color: #f5f3ff;
+}
+
+/* 5. 青色主题 (科技冷静) */
+body.theme-cyan {
+	background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+}
+body.theme-cyan h1, body.theme-cyan h2, body.theme-cyan h3, 
+body.theme-cyan h4, body.theme-cyan h5, body.theme-cyan h6 {
+	color: #0369a1;
+}
+body.theme-cyan th {
+	background-color: #f0f9ff;
+}
+
+
+/* 内容容器：白色卡片 */
+body {
+	width: 80%;
+	max-width: 900px;
+	margin: 20px auto;
+	padding: 30px;
+	/* 注意：这里删掉了 background: white */
+	border-radius: 12px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* 新增：内部卡片容器，用于承载白色背景和阴影 */
+.card {
+	background: white;
+	border-radius: 12px;
+	padding: 30px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* 标题样式优化 */
+h1, h2, h3, h4, h5, h6 {
+	margin-top: 1.2em;
+	margin-bottom: 0.6em;
+}
+
+img, video {
+	max-width: 100%;
+	height: auto;
+	border-radius: 0.5rem;
+}
+
+/* 代码块美化 */
+code {
+	background-color: #f6f8fa;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-family: Consolas, "Courier New", monospace;
+	font-size: 0.95em;
+}
+
+pre {
+	background-color: #f6f8fa;
+	padding: 12px;
+	border-radius: 8px;
+	white-space: pre-wrap;
+	margin: 1em 0;
+}
+
+/* 表格美化 */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1em 0;
+}
+th, td {
+	border: 1px solid #ddd;
+	padding: 8px 12px;
+	text-align: left;
+}
+th {
+	font-weight: bold;
+}
+
+/* 列表间距优化 */
+ul, ol {
+	padding-left: 24px;
+	margin: 0.8em 0;
+}
+li {
+	margin-bottom: 0.3em;
+}
+
+/* 打印时保留背景色 */
+@media print {
+    html, body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

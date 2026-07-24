@@ -8,14 +8,12 @@ pip install qiniu
 '''
 
 import os
-# import logging
+import logging
 from qiniu import Auth, put_file, etag
 
 # SaaS 七牛配置 七牛的 Access Key 和 Secret Key
 QINIU_ACCESS_KEY = os.getenv('QINIU_ACCESS_KEY')
 QINIU_SECRET_KEY = os.getenv('QINIU_SECRET_KEY')
-# QINIU_ACCESS_KEY = 'sjusuhRV9Il4DXAH9UTmI2vj1i9SJF2PZX6QgaXl'
-# QINIU_SECRET_KEY = 'Zpbl498c-Diwzqk_Idyqr8Noj3tV5QPX7IkM80bU'
 
 BUCKET_NAME = 'kksaas'
 BUCKET_DOMAIN = 'https://up-kksaas.keyibao.com'
@@ -51,7 +49,7 @@ def upload_to_qiniu(localfile:str, app_name:str,
         else:
             result = base_url
     except Exception as err:
-        print(err)
+        logging.err("upload_to_qiniu Error:%s", err)
         result = ""
 
     # 成功后删除本地文件

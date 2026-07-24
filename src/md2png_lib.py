@@ -62,18 +62,20 @@ def md2html(md_text:str, cssfile:str="template/base.css", template_file:str=""):
     <style>{css}</style>
     </head>
     <body>
-     {html}
+        {html}
     </body>
     </html>
     """
     page_html = textwrap.dedent(page_html)
+
     # markdown转为HTML
-    md_text = textwrap.dedent(md_text)
+    # md_text = textwrap.dedent(md_text)
     html = markdown.markdown(md_text, extensions=['fenced_code', 'tables'])
     # 加载模板文件
-    html_template = readtxt(template_file)
-    if "{html}" in html_template:
-        page_html = html_template
+    if template_file:
+        html_template = readtxt(template_file)
+        if "{html}" in html_template:
+            page_html = html_template
 
     # 加载CSS
     custom_css = readtxt(cssfile)
@@ -93,8 +95,9 @@ async def md_to_png(md_text:str, output_path:str,
     '''
     if not md_text.strip():
         return ""
-
+    # markdown转HTML
     page_html = md2html(md_text, cssfile, template_file)
+    # 生成输出文件名
     output_filename = rand_filename(output_path, "md_", ".png")
 
     async with async_playwright() as pobj:

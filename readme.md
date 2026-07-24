@@ -170,8 +170,8 @@ markdown2png/
 
 - **框架**: FastAPI 0.110.0
 - **语言**: Python 3.10
-- **Markdown解析**: markdown 3.3.4
-- **HTML转PNG**: playwright 1.45.0 (Chromium)
+- **Markdown解析**: markdown 3.10.2
+- **HTML转PNG**: playwright 1.61.0 (Chromium)
 - **七牛云存储**: qiniu 7.17.0+
 - **测试框架**: pytest 8.1.0
 
@@ -202,10 +202,12 @@ POST /api/markdown2png
 
 |    参数  | 类型    | 必填 |        默认值     |           说明       |
 |   ------ | ------  |------|       --------    |          ------      |
-| md_text  | string  | 是   | -                 | Markdown文本内容     |
+| md_text  | string  | 否   | ""                | Markdown文本内容     |
+| from_url | string  | 否   | ""                | 从URL读取markdown，不为空则优先读取 |
 | isupload | boolean | 否   | false             | 是否上传到七牛云存储 |
 | cssfile  | string  | 否   | template/base.css | CSS样式文件路径      |
 | template | string  | 否   | ""                | HTML模板文件路径     |
+| width    | int     | 否   | 1080              | 输出图片宽度         |
 
 **请求示例**:
 ```json
@@ -213,9 +215,42 @@ POST /api/markdown2png
     "md_text": "# 标题\n\n这是一段**加粗**文本。",
     "isupload": false,
     "cssfile": "template/base.css",
-    "template": ""
+    "template": "",
+    "width": 1080
+}
+
+
+{
+  "from_url": "https://example.com/article.md",
+  "isupload": true,
+  "cssfile": "template/theme.css",
+  "template": "template/theme_orange.html",
+  "width": 1200
 }
 ```
+
+
+```
+{
+  "md_text": "",
+  "isupload": false,
+  "cssfile": "template/base.css",
+  "template": "",
+  "width": 960,
+  "from_url": "https://up-kksaas.keyibao.com/markdown2png/markdown.md"
+}
+
+{
+  "md_text": "",
+  "isupload": false,
+  "cssfile": "template/base.css",
+  "template": "",
+  "width": 960,
+  "from_url": "http://up-kksaas.keyibao.com/markdown2png/markdown.md"
+}
+
+```
+
 
 **响应示例**:
 ```json
@@ -223,7 +258,8 @@ POST /api/markdown2png
     "success": true,
     "message": "图片生成成功",
     "local_path": "/output/md_20251105091745266776.png",
-    "qiniu_url": null
+    "qiniu_url": null,
+	"base64": "iVBORw0KGgoAAAANSUhEUgAABDgAAAFDCAIAAABQryl9AAAQAElEQVR4..."
 }
 ```
 
@@ -280,10 +316,38 @@ docker-compose logs -f
 # 停止容器
 docker-compose down
 
+
+
+
 # 配置七牛云环境变量（可选）
 # 在 docker-compose.yaml 同目录下创建 .env 文件
 # QINIU_ACCESS_KEY=your_access_key
 # QINIU_SECRET_KEY=your_secret_key
+```
+
+发布到阿里容器服务：
+
+```
+pushtoali md2img-markdown2png:latest
+Aliyun image URL: registry.cn-hangzhou.aliyuncs.com/xmxoxo_test/md2img-markdown2png:latest
+```
+
+
+生产环境部署：
+
+```
+拉取镜像
+pullali md2img-markdown2png:latest
+
+复制配置文件
+cd /mnt/app/md2img
+docker-compose_remote.yaml
+.env
+
+启动：
+docker-compose up -d
+
+远程API接口服务地址： http://112.124.111.121:8030/docs
 ```
 
 ### 环境变量
@@ -294,6 +358,4 @@ docker-compose down
 | QINIU_SECRET_KEY | 七牛云Secret Key | - |
 | QINIU_BUCKET_NAME | 七牛云存储桶名称 | kksaas |
 | QINIU_BUCKET_DOMAIN | 七牛云存储域名 | https://up-kksaas.keyibao.com |
-
-
 

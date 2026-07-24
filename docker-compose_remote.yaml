@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  markdown2png:
+    image: md2img-markdown2png:${IMAGE_TAG:-latest}
+    container_name: markdown2png-service
+    ports:
+      - "8030:8030"
+    volumes:
+      - ./template:/app/template
+      - ./output:/app/output
+    environment:
+      - QINIU_ACCESS_KEY=${QINIU_ACCESS_KEY}
+      - QINIU_SECRET_KEY=${QINIU_SECRET_KEY}
+      - QINIU_BUCKET_NAME=${QINIU_BUCKET_NAME:-kksaas}
+      - QINIU_BUCKET_DOMAIN=${QINIU_BUCKET_DOMAIN:-https://up-kksaas.keyibao.com}
+    restart: unless-stopped

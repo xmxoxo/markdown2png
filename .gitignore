@@ -4,3 +4,4 @@ tests
 md_news
 output/*.png
 output/*.jpg
+.env
