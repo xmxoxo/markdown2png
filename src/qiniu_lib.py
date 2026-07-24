@@ -14,8 +14,6 @@ from qiniu import Auth, put_file, etag
 # SaaS 七牛配置 七牛的 Access Key 和 Secret Key
 QINIU_ACCESS_KEY = os.getenv('QINIU_ACCESS_KEY')
 QINIU_SECRET_KEY = os.getenv('QINIU_SECRET_KEY')
-# QINIU_ACCESS_KEY = 'sjusuhRV9Il4DXAH9UTmI2vj1i9SJF2PZX6QgaXl'
-# QINIU_SECRET_KEY = 'Zpbl498c-Diwzqk_Idyqr8Noj3tV5QPX7IkM80bU'
 
 BUCKET_NAME = 'kksaas'
 BUCKET_DOMAIN = 'https://up-kksaas.keyibao.com'
